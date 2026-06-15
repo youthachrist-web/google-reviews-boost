@@ -2,14 +2,14 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Star, TrendingUp, Smartphone, Clock, Award } from "lucide-react";
+import { CheckCircle2, Star, TrendingUp, Smartphone, QrCode, Wifi, UtensilsCrossed, Clock, Award } from "lucide-react";
 
 import heroImg from "@/assets/nfc-plate.png";
 import cafeImg from "@/assets/cafe-lifestyle.png";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
 };
 
 const staggerContainer = {
@@ -250,6 +250,166 @@ export default function Home() {
               <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
                 Quero Tudo
               </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Restaurant Menu QR/NFC Section */}
+      <section id="menu-digital" className="py-24 bg-muted/50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary-foreground font-medium text-sm mb-6">
+                <UtensilsCrossed className="w-4 h-4 text-primary" />
+                Exclusivo para Restaurantes
+              </div>
+              <h2 className="text-4xl md:text-5xl font-display font-bold text-secondary mb-6">
+                Menu digital no telemóvel. Sem app. Sem papel.
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8">
+                Os seus clientes encostam o telemóvel ou leem o QR Code na mesa e o menu abre instantaneamente. Atualize os pratos e preços a qualquer momento, sem imprimir nada.
+              </p>
+              <ul className="space-y-4 mb-10">
+                {[
+                  { icon: <QrCode className="w-5 h-5 text-primary" />, text: "QR Code e NFC na mesma placa de mesa" },
+                  { icon: <Wifi className="w-5 h-5 text-primary" />, text: "Menu online sempre atualizado em tempo real" },
+                  { icon: <Smartphone className="w-5 h-5 text-primary" />, text: "Abre direto no telemóvel, sem instalar nada" },
+                  { icon: <Star className="w-5 h-5 text-primary" />, text: "No final da refeição, pede avaliação no Google" },
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3 text-base font-medium text-secondary">
+                    <span className="flex-shrink-0">{item.icon}</span>
+                    {item.text}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                size="lg"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold h-14 px-8 text-lg"
+                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                data-testid="button-menu-cta"
+              >
+                Quero menu digital para o meu restaurante
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="grid grid-cols-2 gap-4"
+            >
+              {[
+                {
+                  icon: <QrCode className="w-8 h-8 text-primary" />,
+                  title: "Placa de Mesa",
+                  desc: "NFC + QR Code integrados. O cliente acede ao menu e à avaliação na mesma placa.",
+                  tag: "Produto físico"
+                },
+                {
+                  icon: <UtensilsCrossed className="w-8 h-8 text-primary" />,
+                  title: "Menu Editável",
+                  desc: "Altere preços, adicione pratos especiais do dia e fotos a qualquer hora.",
+                  tag: "Serviço digital"
+                },
+                {
+                  icon: <Star className="w-8 h-8 text-primary" />,
+                  title: "Avaliação no Final",
+                  desc: "Após o pedido, o sistema convida o cliente a deixar 5 estrelas no Google.",
+                  tag: "Automático"
+                },
+                {
+                  icon: <TrendingUp className="w-8 h-8 text-primary" />,
+                  title: "Mais Reservas",
+                  desc: "Mais avaliações positivas = maior visibilidade no Google Maps = mais clientes.",
+                  tag: "Resultado"
+                },
+              ].map((card, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="bg-card p-6 rounded-2xl border border-border shadow-sm flex flex-col gap-3"
+                  data-testid={`card-menu-feature-${i}`}
+                >
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                    {card.icon}
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-primary">{card.tag}</span>
+                  <h3 className="font-display font-bold text-secondary text-lg leading-tight">{card.title}</h3>
+                  <p className="text-sm text-muted-foreground">{card.desc}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Pricing row for menu */}
+          <div className="mt-20">
+            <h3 className="text-center text-2xl md:text-3xl font-display font-bold text-secondary mb-10">Pacotes para Restaurantes</h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                {
+                  name: "Menu Essencial",
+                  price: "€49",
+                  suffix: "",
+                  features: ["Placa de mesa NFC + QR Code", "Menu digital online", "Até 30 itens no menu", "Atualização livre"],
+                  highlight: false
+                },
+                {
+                  name: "Menu + Reviews",
+                  price: "€89",
+                  suffix: "",
+                  features: ["Tudo do Essencial", "Pedido de avaliação automático", "Design personalizado com a marca", "Suporte prioritário"],
+                  highlight: true
+                },
+                {
+                  name: "Restaurante Completo",
+                  price: "€149",
+                  suffix: "/mês",
+                  features: ["Tudo do Menu + Reviews", "Gestão de avaliações Google", "Relatórios mensais", "Estratégia de reputação online"],
+                  highlight: false
+                },
+              ].map((plan, i) => (
+                <div
+                  key={i}
+                  className={`p-8 rounded-2xl border flex flex-col ${plan.highlight ? "bg-secondary text-secondary-foreground border-secondary shadow-xl relative" : "bg-card text-card-foreground border-border"}`}
+                  data-testid={`card-restaurant-plan-${i}`}
+                >
+                  {plan.highlight && (
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                      Mais Pedido
+                    </div>
+                  )}
+                  <h4 className="font-display font-bold text-xl mb-3">{plan.name}</h4>
+                  <div className="mb-6">
+                    <span className="text-4xl font-black">{plan.price}</span>
+                    <span className={`text-sm ${plan.highlight ? "text-secondary-foreground/70" : "text-muted-foreground"}`}>{plan.suffix}</span>
+                  </div>
+                  <ul className="space-y-3 mb-8 flex-1">
+                    {plan.features.map((f, j) => (
+                      <li key={j} className={`flex gap-2 text-sm ${plan.highlight ? "text-secondary-foreground/80" : "text-muted-foreground"}`}>
+                        <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    className={`w-full font-bold ${plan.highlight ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-secondary text-secondary-foreground hover:bg-secondary/90"}`}
+                    onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                    data-testid={`button-restaurant-plan-${i}`}
+                  >
+                    Quero este plano
+                  </Button>
+                </div>
+              ))}
             </div>
           </div>
         </div>
