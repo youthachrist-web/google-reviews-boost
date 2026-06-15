@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Star, TrendingUp, Smartphone, QrCode, Wifi, UtensilsCrossed, Clock, Award } from "lucide-react";
+import { CheckCircle2, Star, TrendingUp, Smartphone, QrCode, Wifi, UtensilsCrossed, Loader2 } from "lucide-react";
 
 import heroImg from "@/assets/nfc-plate.png";
 import cafeImg from "@/assets/cafe-lifestyle.png";
@@ -22,7 +23,33 @@ const staggerContainer = {
   }
 };
 
+const BASE_URL = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+
 export default function Home() {
+  const [form, setForm] = useState({ name: "", business: "", email: "", phone: "", plan: "" });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.plan) { setErrorMsg("Por favor selecione um plano."); return; }
+    setStatus("loading");
+    setErrorMsg("");
+    try {
+      const res = await fetch(`${BASE_URL}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: form.name, business: form.business, email: form.email, phone: form.phone, plan: form.plan }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro desconhecido");
+      setStatus("success");
+    } catch (err: unknown) {
+      setStatus("error");
+      setErrorMsg(err instanceof Error ? err.message : "Erro ao enviar. Tente novamente.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Navigation */}
@@ -419,53 +446,130 @@ export default function Home() {
       <section id="contact" className="py-24">
         <div className="max-w-3xl mx-auto px-6">
           <div className="bg-card border border-border shadow-xl rounded-3xl p-8 md:p-12">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-secondary mb-4">Pronto para dominar o Google?</h2>
-              <p className="text-muted-foreground">Preencha o formulário abaixo. A nossa equipa entrará em contacto em menos de 24 horas.</p>
-            </div>
-            
-            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert("Formulário submetido com sucesso! Entraremos em contacto em breve."); }}>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-secondary">O seu nome</label>
-                  <Input placeholder="João Silva" required className="h-12 bg-muted/50 border-transparent focus:bg-background" />
+            {status === "success" ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-8"
+              >
+                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle2 className="w-10 h-10 text-primary" />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-secondary">Nome do Negócio</label>
-                  <Input placeholder="Restaurante O Lado" required className="h-12 bg-muted/50 border-transparent focus:bg-background" />
+                <h2 className="text-3xl font-display font-bold text-secondary mb-3">Pedido recebido!</h2>
+                <p className="text-muted-foreground text-lg mb-6">
+                  Entraremos em contacto em menos de 24 horas.<br />Obrigado, <strong>{form.name}</strong>!
+                </p>
+                <Button
+                  variant="outline"
+                  className="border-secondary text-secondary"
+                  onClick={() => { setStatus("idle"); setForm({ name: "", business: "", email: "", phone: "", plan: "" }); }}
+                  data-testid="button-submit-again"
+                >
+                  Enviar outro pedido
+                </Button>
+              </motion.div>
+            ) : (
+              <>
+                <div className="text-center mb-10">
+                  <h2 className="text-3xl md:text-4xl font-display font-bold text-secondary mb-4">Pronto para dominar o Google?</h2>
+                  <p className="text-muted-foreground">Preencha o formulário. A nossa equipa entra em contacto em menos de 24 horas.</p>
                 </div>
-              </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-secondary">Email</label>
-                  <Input type="email" placeholder="joao@restaurante.pt" required className="h-12 bg-muted/50 border-transparent focus:bg-background" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-secondary">Telemóvel</label>
-                  <Input type="tel" placeholder="912 345 678" required className="h-12 bg-muted/50 border-transparent focus:bg-background" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-secondary">Plano de Interesse</label>
-                <Select required>
-                  <SelectTrigger className="h-12 bg-muted/50 border-transparent focus:bg-background">
-                    <SelectValue placeholder="Selecione um plano" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="basico">Plano Básico (€39)</SelectItem>
-                    <SelectItem value="premium">Plano Premium (€79 - €149)</SelectItem>
-                    <SelectItem value="mensal">Plano Mensal (€29 - €99/mês)</SelectItem>
-                    <SelectItem value="completa">A Solução Completa (€100 - €300)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="submit" className="w-full h-14 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90 mt-4">
-                Solicitar Contacto Agora
-              </Button>
-              <p className="text-xs text-center text-muted-foreground mt-4">
-                Sem compromisso. Entraremos em contacto para afinar os detalhes.
-              </p>
-            </form>
+
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-secondary">O seu nome</label>
+                      <Input
+                        placeholder="João Silva"
+                        required
+                        value={form.name}
+                        onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                        className="h-12 bg-muted/50 border-transparent focus:bg-background"
+                        data-testid="input-name"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-secondary">Nome do Negócio</label>
+                      <Input
+                        placeholder="Restaurante O Petisco"
+                        required
+                        value={form.business}
+                        onChange={e => setForm(f => ({ ...f, business: e.target.value }))}
+                        className="h-12 bg-muted/50 border-transparent focus:bg-background"
+                        data-testid="input-business"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-secondary">Email</label>
+                      <Input
+                        type="email"
+                        placeholder="joao@restaurante.pt"
+                        required
+                        value={form.email}
+                        onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                        className="h-12 bg-muted/50 border-transparent focus:bg-background"
+                        data-testid="input-email"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-secondary">Telemóvel</label>
+                      <Input
+                        type="tel"
+                        placeholder="912 345 678"
+                        required
+                        value={form.phone}
+                        onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                        className="h-12 bg-muted/50 border-transparent focus:bg-background"
+                        data-testid="input-phone"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-secondary">Plano de Interesse</label>
+                    <Select
+                      value={form.plan}
+                      onValueChange={val => setForm(f => ({ ...f, plan: val }))}
+                    >
+                      <SelectTrigger className="h-12 bg-muted/50 border-transparent focus:bg-background" data-testid="select-plan">
+                        <SelectValue placeholder="Selecione um plano" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="basico">Plano Básico (€39)</SelectItem>
+                        <SelectItem value="premium">Plano Premium (€79 - €149)</SelectItem>
+                        <SelectItem value="mensal">Plano Mensal (€29 - €99/mês)</SelectItem>
+                        <SelectItem value="completa">A Solução Completa (€100 - €300)</SelectItem>
+                        <SelectItem value="menu_essencial">Restaurante — Menu Essencial (€49)</SelectItem>
+                        <SelectItem value="menu_reviews">Restaurante — Menu + Reviews (€89)</SelectItem>
+                        <SelectItem value="restaurante_completo">Restaurante — Pacote Completo (€149/mês)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {errorMsg && (
+                    <p className="text-sm text-destructive font-medium" data-testid="text-error">{errorMsg}</p>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={status === "loading"}
+                    className="w-full h-14 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90 mt-4 disabled:opacity-70"
+                    data-testid="button-submit"
+                  >
+                    {status === "loading" ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        A enviar...
+                      </span>
+                    ) : "Solicitar Contacto Agora"}
+                  </Button>
+                  <p className="text-xs text-center text-muted-foreground mt-4">
+                    Sem compromisso. Entraremos em contacto para afinar os detalhes.
+                  </p>
+                </form>
+              </>
+            )}
           </div>
         </div>
       </section>
