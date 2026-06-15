@@ -1,9 +1,0 @@
-{
-  "buildCommand": "npm install -g pnpm && pnpm install && PORT=3000 BASE_PATH=/ pnpm --filter @workspace/google-reviews-boost run build",
-  "outputDirectory": "artifacts/google-reviews-boost/dist/public",
-  "installCommand": "echo 'install handled in buildCommand'",
-  "framework": null,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
