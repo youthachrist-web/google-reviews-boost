@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Google Reviews Boost"
+version = "1.0.0"
+id = "artifacts/google-reviews-boost"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22137
+
+[services.development]
+run = "pnpm --filter @workspace/google-reviews-boost run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/google-reviews-boost", "run", "build" ]
+publicDir = "artifacts/google-reviews-boost/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22137"
+BASE_PATH = "/"

@@ -1,0 +1,14 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "2bU4utrO4DMkb8Sgk-4_9"
+uri = "file://artifacts/google-reviews-boost/src/assets/nfc-plate.png"
+type = "image"
+title = "NFC Google Review Plate"
+
+[[generated]]
+id = "68F_4sMr220G_oJHxZQpl"
+uri = "file://artifacts/google-reviews-boost/src/assets/cafe-lifestyle.png"
+type = "image"
+title = "Busy Portuguese Cafe"
